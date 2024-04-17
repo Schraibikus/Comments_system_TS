@@ -1,6 +1,9 @@
-// import { Rating } from "./rating.js";
+import { Main } from "../main";
+import { Rating } from "./rating";
 class Archive {
-  constructor({ main, rating }) {
+  main: Main;
+  rating: Rating;
+  constructor({ main, rating }: { main: Main; rating: Rating }) {
     this.main = main;
     this.rating = rating;
 

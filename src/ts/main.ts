@@ -9,23 +9,32 @@ import { Input } from "./classes/input.js";
 class Main {
   API: string = "https://randomuser.me/api/";
   users: string[] = JSON.parse(localStorage.getItem("users")!) || [];
-  comments = JSON.parse(localStorage.getItem("comments")!) || [];
-  answers = JSON.parse(localStorage.getItem("answers")!) || [];
-  ratings = JSON.parse(localStorage.getItem("ratings")!) || [];
-  answerRatings = JSON.parse(localStorage.getItem("answerRatings")!) || [];
-  itemsSort = JSON.parse(localStorage.getItem("itemsSort")!) || [];
-  usersIdx = 0;
-  maxUsers = 20;
-  userTitles = [
-    "comments__user-title",
-    "comments__archive-title",
-    "comments__answer-title",
-  ];
+  comments: string[] = JSON.parse(localStorage.getItem("comments")!) || [];
+  answers: string[] | number[] =
+    JSON.parse(localStorage.getItem("answers")!) || [];
+  ratings: number[] = JSON.parse(localStorage.getItem("ratings")!) || [];
+  answerRatings: number[] =
+    JSON.parse(localStorage.getItem("answerRatings")!) || [];
+  itemsSort: string[] | number[] =
+    JSON.parse(localStorage.getItem("itemsSort")!) || [];
+  maxUsers: number = 20;
 
-  async setUserParams(API) {
-    await fetch(API).then((res) =>
-      res.json().then((data) => {
-        const userObj = {
+  rating = new Rating({ main: Main });
+  user = new User({ main: Main });
+  archive = new Archive({ rating: Rating, main: Main });
+  answer = new Answer({ rating: Rating, main: Main });
+  utils = new Utils({ main: Main });
+  favorites = new Favorites();
+  input = new Input({ main: Main });
+
+  onComments: NodeListOf<Element>;
+  commentsArchiveIsFavorite: NodeListOf<HTMLElement>;
+  commentsAmswerIsFavorite: NodeListOf<HTMLElement>;
+
+  async setUserParams(API: string): Promise<string[]> {
+    await fetch(API).then((res: Response) =>
+      res.json().then((data: any) => {
+        const userObj: string[] | any = {
           first: data.results[0].name.first,
           last: data.results[0].name.last,
           src: data.results[0].picture.thumbnail,
@@ -38,11 +47,11 @@ class Main {
     return this.users;
   }
 
-  formatDate() {
-    let dayOfMonth = new Date().getDate();
-    let month = new Date().getMonth() + 1;
-    let hour = new Date().getHours();
-    let minutes = new Date().getMinutes();
+  formatDate(): string | number {
+    let dayOfMonth: string | number = new Date().getDate();
+    let month: string | number = new Date().getMonth() + 1;
+    let hour: string | number = new Date().getHours();
+    let minutes: string | number = new Date().getMinutes();
 
     month = month < 10 ? "0" + month : month;
     dayOfMonth = dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth;
@@ -52,59 +61,53 @@ class Main {
     return `${dayOfMonth}.${month} ${hour}:${minutes}`;
   }
 
-  render() {
+  render(): void {
     this.rating = new Rating({
-      main: this,
+      main: Main,
     });
     this.user = new User({
-      main: this,
+      main: Main,
     });
     this.archive = new Archive({
-      rating: this.rating,
-      main: this,
+      rating: Rating,
+      main: Main,
     });
     this.answer = new Answer({
-      rating: this.rating,
-      main: this,
+      rating: Rating,
+      main: Main,
     });
     this.utils = new Utils({
-      main: this,
+      main: Main,
     });
-    this.favorites = new Favorites({
-      main: this,
-    });
+    this.favorites = new Favorites();
   }
 
-  renderInput() {
+  renderInput(): void {
     this.input = new Input({
-      main: this,
+      main: Main,
     });
   }
 
-  setNextUser() {
+  setNextUser(): void {
     this.user.setUser();
     this.users.forEach((el, idx) => {
       if (el != null) this.user.setUserName(idx);
     });
   }
 
-  setNextComments() {
+  setNextComments(): void {
     this.comments.forEach((el, idx) => {
       if (el != null) this.archive.setNextUser(idx);
     });
   }
 
-  getCommentsInFavorites() {
+  getCommentsInFavorites(): void {
     this.onComments = document.querySelectorAll(".comments-header__item-text");
-    this.onComments[2].addEventListener("click", (event) => {
-      event.currentTarget.classList.toggle(
-        "comments-header__item-text--active"
-      );
-      if (
-        event.currentTarget.classList.contains(
-          "comments-header__item-text--active"
-        )
-      ) {
+    this.onComments[2].addEventListener("click", (event: Event) => {
+      let target: HTMLElement = <HTMLElement>event.currentTarget;
+      if (!!target)
+        target.classList.toggle("comments-header__item-text--active");
+      if (target.classList.contains("comments-header__item-text--active")) {
         this.commentsArchiveIsFavorite =
           document.querySelectorAll(".comments__archive");
         for (let element of this.commentsArchiveIsFavorite) {
@@ -134,7 +137,7 @@ class Main {
     });
   }
 
-  async start() {
+  async start(): Promise<void> {
     await this.setUserParams(this.API);
 
     this.render();

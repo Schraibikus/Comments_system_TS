@@ -1,10 +1,14 @@
+import { Main } from "../main";
+import { Rating } from "./rating";
 class Answer {
-  constructor({ main, rating }) {
+  main: Main;
+  rating: Rating;
+  constructor({ main, rating }: { main: Main; rating: Rating }) {
     this.main = main;
     this.rating = rating;
   }
 
-  setUser(idx) {
+  setUser(idx: number) {
     this.userNextAnswer = document.createElement("div");
     this.userNextAnswer.classList.add("comments__answer");
     this.userNextAnswer.setAttribute("data-index", idx);
