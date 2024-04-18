@@ -3,13 +3,29 @@ import { Rating } from "./rating";
 class Answer {
   main: Main;
   rating: Rating;
+
+  userNextAnswer!: HTMLDivElement | any;
+  targets!: NodeListOf<HTMLDivElement>;
+  buttonAnswers!: NodeListOf<HTMLButtonElement>;
+  authorAnswerName!: HTMLParagraphElement | any;
+  authorAnswerImg!: HTMLImageElement | any;
+  buttonAnswer!: HTMLElement | any;
+  toWhomAnswerName!: string | null;
+  authorIdx!: string | undefined;
+  userNavAnswer!: HTMLFormElement;
+  commentsFormsElements: any;
+  textarea!: HTMLInputElement;
+  output!: HTMLOutputElement;
+  buttonSubmit!: HTMLButtonElement;
+  lengthCommentError!: HTMLElement | null;
+  btnAnswerClose!: HTMLButtonElement | null;
   constructor({ main, rating }: { main: Main; rating: Rating }) {
     this.main = main;
     this.rating = rating;
   }
 
-  setUser(idx: number) {
-    this.userNextAnswer = document.createElement("div");
+  setUser(idx: number): void {
+    this.userNextAnswer = <HTMLDivElement>document.createElement("div");
     this.userNextAnswer.classList.add("comments__answer");
     this.userNextAnswer.setAttribute("data-index", idx);
     this.userNextAnswer.setAttribute("isFavorite", false);
@@ -61,7 +77,7 @@ class Answer {
     });
   }
 
-  commentAnswer() {
+  commentAnswer(): void {
     this.buttonAnswers = document.querySelectorAll(
       ".comments__archive-answer-btn"
     );
@@ -82,7 +98,7 @@ class Answer {
           this.userNavAnswer.setAttribute("id", "answerForm");
           this.userNavAnswer.innerHTML = `
             <img src="${
-              this.main.users.at(-1).src
+              this.main.users.at(-1)?.src
             }" alt="user" width="61" height="61"/>
             <p class="comments__archive-title">${
               this.main.users.at(-1).first
@@ -125,7 +141,7 @@ class Answer {
               this.buttonAnswerClose();
               alert("ошибка");
             } else {
-              this.answerOdj = {
+              const answerOdj = {
                 text: this.textarea.value,
                 date: this.main.formatDate(),
                 name: this.authorAnswerName.textContent,
@@ -133,7 +149,7 @@ class Answer {
                 toWhom: this.toWhomAnswerName,
                 authorIdx: this.buttonAnswer.dataset.index,
               };
-              this.main.answers.push(this.answerOdj);
+              this.main.answers.push(answerOdj);
               localStorage.setItem(
                 "answers",
                 JSON.stringify(this.main.answers)
@@ -148,7 +164,7 @@ class Answer {
     });
   }
 
-  commentAnswerInput() {
+  commentAnswerInput(): void {
     this.textarea.addEventListener("input", () => {
       this.output.textContent = 0 + this.textarea.value.length + "/1000";
       if (this.textarea.value.length > 0) {
@@ -156,28 +172,29 @@ class Answer {
       } else {
         this.buttonSubmitReady();
       }
-      if (this.textarea.value.length > 1000) {
+      if (this.textarea.value.length > 1000 && !!this.lengthCommentError) {
         this.output.style.color = "red";
         this.lengthCommentError.style.display = "block";
         this.buttonSubmitReady();
-      } else {
+      } else if (!!this.lengthCommentError) {
         this.output.style.color = "black";
         this.lengthCommentError.style.display = "none";
       }
-      this.textarea.style.height = 0;
+      this.textarea.style.height = "0";
       this.textarea.style.height = this.textarea.scrollHeight + "px";
     });
   }
 
-  buttonAnswerClose() {
+  buttonAnswerClose(): void {
     this.btnAnswerClose = document.querySelector(".comment__input-btn-answer");
-    this.btnAnswerClose.addEventListener("click", (event) => {
-      event.preventDefault();
-      this.userNavAnswer.remove();
-    });
+    if (!!this.btnAnswerClose)
+      this.btnAnswerClose.addEventListener("click", (event) => {
+        event.preventDefault();
+        this.userNavAnswer.remove();
+      });
   }
 
-  onFocusTextarea() {
+  onFocusTextarea(): void {
     for (let element of this.commentsFormsElements) {
       if (element.type != "checkbox" && element.type != "submit") {
         element.addEventListener("focus", function () {
@@ -190,7 +207,7 @@ class Answer {
     }
   }
 
-  buttonSubmitReady() {
+  buttonSubmitReady(): void {
     if (this.textarea.value.length > 0 && this.textarea.value.length < 1000) {
       this.buttonSubmit.classList.add("comment__input-btn--ready");
     } else {
@@ -198,8 +215,8 @@ class Answer {
     }
   }
 
-  setNextAnswers() {
-    this.main.answers.forEach((el, idx) => {
+  setNextAnswers(): void {
+    this.main.answers.forEach((el: any, idx: any) => {
       if (el != null) {
         this.setUser(idx);
       }

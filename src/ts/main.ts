@@ -8,41 +8,46 @@ import { Input } from "./classes/input.js";
 
 class Main {
   API: string = "https://randomuser.me/api/";
-  users: string[] = JSON.parse(localStorage.getItem("users")!) || [];
-  comments: string[] = JSON.parse(localStorage.getItem("comments")!) || [];
-  answers: string[] | number[] =
-    JSON.parse(localStorage.getItem("answers")!) || [];
-  ratings: number[] = JSON.parse(localStorage.getItem("ratings")!) || [];
-  answerRatings: number[] =
+  users: string[] | any = JSON.parse(localStorage.getItem("users")!) || [];
+  comments: string[] | any =
+    JSON.parse(localStorage.getItem("comments")!) || [];
+  answers: string[] | any = JSON.parse(localStorage.getItem("answers")!) || [];
+  ratings: number[] | any = JSON.parse(localStorage.getItem("ratings")!) || [];
+  answerRatings: number[] | any =
     JSON.parse(localStorage.getItem("answerRatings")!) || [];
-  itemsSort: string[] | number[] =
+  itemsSort: string[] | any =
     JSON.parse(localStorage.getItem("itemsSort")!) || [];
   maxUsers: number = 20;
 
-  rating = new Rating({ main: Main });
-  user = new User({ main: Main });
-  archive = new Archive({ rating: Rating, main: Main });
-  answer = new Answer({ rating: Rating, main: Main });
-  utils = new Utils({ main: Main });
+  rating = new Rating({ main: this });
+  user = new User({ main: this });
+  archive = new Archive({ main: this, rating: this.rating });
+  answer = new Answer({ main: this, rating: this.rating });
+  utils = new Utils({ main: this });
   favorites = new Favorites();
-  input = new Input({ main: Main });
+  input = new Input({ main: this });
 
-  onComments: NodeListOf<Element>;
-  commentsArchiveIsFavorite: NodeListOf<HTMLElement>;
-  commentsAmswerIsFavorite: NodeListOf<HTMLElement>;
+  onComments!: NodeListOf<Element>;
+  commentsArchiveIsFavorite!: NodeListOf<HTMLElement>;
+  commentsAmswerIsFavorite!: NodeListOf<HTMLElement>;
 
   async setUserParams(API: string): Promise<string[]> {
     await fetch(API).then((res: Response) =>
-      res.json().then((data: any) => {
-        const userObj: string[] | any = {
-          first: data.results[0].name.first,
-          last: data.results[0].name.last,
-          src: data.results[0].picture.thumbnail,
-        };
-        this.users.push(userObj);
-        if (this.users.length > this.maxUsers) this.users.pop();
-        localStorage.setItem("users", JSON.stringify(this.users));
-      })
+      res
+        .json()
+        .then((data: any) => {
+          const userObj: string[] | any = {
+            first: data.results[0].name.first,
+            last: data.results[0].name.last,
+            src: data.results[0].picture.thumbnail,
+          };
+          this.users.push(userObj);
+          if (this.users.length > this.maxUsers) this.users.pop();
+          localStorage.setItem("users", JSON.stringify(this.users));
+        })
+        .catch(() => {
+          console.log("error");
+        })
     );
     return this.users;
   }
@@ -62,41 +67,27 @@ class Main {
   }
 
   render(): void {
-    this.rating = new Rating({
-      main: Main,
-    });
-    this.user = new User({
-      main: Main,
-    });
-    this.archive = new Archive({
-      rating: Rating,
-      main: Main,
-    });
-    this.answer = new Answer({
-      rating: Rating,
-      main: Main,
-    });
-    this.utils = new Utils({
-      main: Main,
-    });
+    this.rating = new Rating({ main: this });
+    this.user = new User({ main: this });
+    this.archive = new Archive({ main: this, rating: this.rating });
+    this.answer = new Answer({ main: this, rating: this.rating });
+    this.utils = new Utils({ main: this });
     this.favorites = new Favorites();
   }
 
   renderInput(): void {
-    this.input = new Input({
-      main: Main,
-    });
+    this.input = new Input({ main: this });
   }
 
   setNextUser(): void {
     this.user.setUser();
-    this.users.forEach((el, idx) => {
+    this.users.forEach((el: string | any, idx: number) => {
       if (el != null) this.user.setUserName(idx);
     });
   }
 
   setNextComments(): void {
-    this.comments.forEach((el, idx) => {
+    this.comments.forEach((el: string | any, idx: number) => {
       if (el != null) this.archive.setNextUser(idx);
     });
   }
@@ -143,6 +134,8 @@ class Main {
     this.render();
     this.setNextUser();
     this.renderInput();
+    this.input.formInput();
+    this.input.formSubmit();
 
     this.setNextComments();
     this.answer.commentAnswer();
@@ -157,6 +150,7 @@ class Main {
     this.utils.sortCommentsByNumserOfRating();
     this.input.onFocusTextarea();
     this.utils.sortCommentsByRelevance();
+    this.utils.dropdownMenu();
     this.utils.sortCommentsByNumberOfResponses();
   }
 }

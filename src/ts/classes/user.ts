@@ -1,13 +1,20 @@
+import { Main } from "../main";
 class User {
-  constructor({ main }) {
-    this.main = main;
+  main: Main;
 
+  commentsHeader: HTMLDivElement | null;
+  userComment: HTMLFormElement | any;
+  userImg!: HTMLImageElement | null;
+  userName!: HTMLParagraphElement | null;
+
+  constructor({ main }: { main: Main }) {
+    this.main = main;
     this.commentsHeader = document.querySelector(".comments-header");
     this.userComment = document.querySelector(".comments__user");
   }
 
-  setUser() {
-    this.userComment = document.createElement("form");
+  setUser(): void {
+    this.userComment = <HTMLFormElement>document.createElement("form");
     this.userComment.classList.add("comments__user");
     this.userComment.innerHTML = `  
     <img class="authorImg" src="${
@@ -28,9 +35,9 @@ class User {
           Отправить
         </button>
       `;
-    this.commentsHeader.after(this.userComment);
+    if (!!this.commentsHeader) this.commentsHeader.after(this.userComment);
   }
-  setUserName(idx) {
+  setUserName(idx: number): void {
     this.userImg = document.createElement("img");
     this.userImg.src = `${this.main.users[idx].src}`;
     this.userImg.alt = "user";
@@ -40,10 +47,10 @@ class User {
     this.userName.classList.add("comments__archive-title");
     this.userName.textContent = `${this.main.users[idx].first} ${this.main.users[idx].last}`;
 
-    this.userComment.prepend(this.userImg);
+    if (!!this.userComment) this.userComment.prepend(this.userImg);
     this.userImg.remove();
 
-    this.userComment.prepend(this.userName);
+    if (!!this.userComment) this.userComment.prepend(this.userName);
     this.userName.remove();
   }
 }

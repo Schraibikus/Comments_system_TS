@@ -1,10 +1,39 @@
+import { Main } from "../main";
 class Utils {
-  constructor({ main }) {
+  main: Main;
+
+  links: NodeListOf<Element>;
+
+  onComments!: NodeListOf<Element>;
+  dropdownImg!: HTMLImageElement;
+  dropdownNav!: HTMLElement;
+  dropdownContent!: any;
+  commentCount!: HTMLElement | null;
+
+  noSortedByNumserOfDate!: NodeListOf<HTMLElement>;
+  byDateButtonsList!: HTMLDivElement;
+  buttonOnAllComents!: HTMLDivElement;
+  noSortedByNumserOfRating!: any;
+  byRatingButtonsList!: HTMLDivElement;
+  noSortedItems!: HTMLElement | null;
+  userSortNextContainer!: any;
+  userSortNext!: HTMLDivElement;
+  userSortNextItems!: NodeListOf<Element> | any;
+
+  constructor({ main }: { main: Main }) {
     this.main = main;
 
+    this.links = document.querySelectorAll(".dropdown__link");
+  }
+
+  dropdownMenu(): void {
     this.onComments = document.querySelectorAll(".comments-header__item-text");
-    this.dropdownImg = document.querySelector(".dropdown-arrow");
-    this.dropdownNav = document.querySelector(".comments-header__dropdown-nav");
+    this.dropdownImg = <HTMLImageElement>(
+      document.querySelector(".dropdown-arrow")
+    );
+    this.dropdownNav = <HTMLElement>(
+      document.querySelector(".comments-header__dropdown-nav")
+    );
 
     this.onComments[1].addEventListener("click", () => {
       this.onComments[1].classList.toggle("comments-header__item-text--active");
@@ -20,22 +49,22 @@ class Utils {
         this.dropdownImg.classList.add("comments-header--active");
       }
     });
-    this.links = document.querySelectorAll(".dropdown__link");
   }
 
-  increaseCommentCount() {
+  increaseCommentCount(): void {
     this.commentCount = document.querySelector(".comments-count");
-    this.commentCount.innerHTML = `
+    if (!!this.commentCount)
+      this.commentCount.innerHTML = `
     &#40;${this.main.comments.length + this.main.answers.length}&#41;
     `;
   }
 
-  sortCommentsByDate() {
+  sortCommentsByDate(): void {
     this.noSortedByNumserOfDate = document.querySelectorAll('[class*="-date"]');
 
-    this.byDateButtonsList = document.querySelector(".byDate");
-    this.buttonOnAllComents = document.querySelector(
-      ".comments-header__item-text"
+    this.byDateButtonsList = <HTMLDivElement>document.querySelector(".byDate");
+    this.buttonOnAllComents = <HTMLDivElement>(
+      document.querySelector(".comments-header__item-text")
     );
     let buttonDown = this.byDateButtonsList.children[0];
     let buttonUp = this.byDateButtonsList.children[1];
@@ -55,7 +84,7 @@ class Utils {
       { once: true };
   }
 
-  sortCommentsByNumserOfRating() {
+  sortCommentsByNumserOfRating(): void {
     this.noSortedByNumserOfRating =
       document.querySelectorAll(".comments__count");
 
@@ -78,9 +107,11 @@ class Utils {
       localStorage.setItem("itemsSort", JSON.stringify(this.main.itemsSort));
     }
 
-    this.byRatingButtonsList = document.querySelector(".byNumserOfRating");
-    this.buttonOnAllComents = document.querySelector(
-      ".comments-header__item-text"
+    this.byRatingButtonsList = <HTMLDivElement>(
+      document.querySelector(".byNumserOfRating")
+    );
+    this.buttonOnAllComents = <HTMLDivElement>(
+      document.querySelector(".comments-header__item-text")
     );
     let buttonDown = this.byRatingButtonsList.children[0];
     let buttonUp = this.byRatingButtonsList.children[1];
@@ -100,45 +131,53 @@ class Utils {
       { once: true };
   }
 
-  displaySortByRating() {
-    this.main.itemsSort.sort((a, b) => (a.rating > b.rating ? 1 : -1));
+  displaySortByRating(): void {
+    this.main.itemsSort.sort((a: string | any, b: string | any) =>
+      a.rating > b.rating ? 1 : -1
+    );
     this.setUsersSort();
   }
 
-  displaySortByDate() {
-    this.main.itemsSort.sort((a, b) => (a.date > b.date ? 1 : -1));
+  displaySortByDate(): void {
+    this.main.itemsSort.sort((a: string | any, b: string | any) =>
+      a.date > b.date ? 1 : -1
+    );
     this.setUsersSort();
   }
 
-  displaySortByRatingReverse() {
-    this.main.itemsSort.sort((a, b) => (a.rating < b.rating ? 1 : -1));
+  displaySortByRatingReverse(): void {
+    this.main.itemsSort.sort((a: string | any, b: string | any) =>
+      a.rating < b.rating ? 1 : -1
+    );
     this.setUsersSort();
   }
-  displaySortByDateReverse() {
-    this.main.itemsSort.sort((a, b) => (a.date < b.date ? 1 : -1));
+  displaySortByDateReverse(): void {
+    this.main.itemsSort.sort((a: string | any, b: string | any) =>
+      a.date < b.date ? 1 : -1
+    );
     this.setUsersSort();
   }
 
-  displayNoneNoSortedItems() {
+  displayNoneNoSortedItems(): void {
     this.noSortedItems = document.querySelector(".comments__container");
-    this.noSortedItems.style.display = "none";
+    if (!!this.noSortedItems) this.noSortedItems.style.display = "none";
     this.buttonOnAllComents.style.backgroundColor = "red";
   }
 
-  displayOnNoSortedItems() {
-    this.noSortedItems.style.display = "block";
+  displayOnNoSortedItems(): void {
+    if (!!this.noSortedItems) this.noSortedItems.style.display = "block";
     this.buttonOnAllComents.style.backgroundColor = "transparent";
     window.location.reload();
     this.setUsersSortClearDisplay();
   }
 
-  setUsersSort() {
-    this.main.itemsSort.forEach((el, idx) => {
+  setUsersSort(): void {
+    this.main.itemsSort.forEach((el: string, idx: number) => {
       if (el != null) this.setNextUserSort(idx);
     });
   }
 
-  setNextUserSort(idx) {
+  setNextUserSort(idx: number): void {
     this.userSortNextContainer = document.querySelector(".comments__content");
     this.userSortNext = document.createElement("div");
     this.userSortNext.classList.add("comments__sorted");
@@ -157,12 +196,12 @@ class Utils {
     this.userSortNextContainer.after(this.userSortNext);
   }
 
-  setUsersSortClearDisplay() {
+  setUsersSortClearDisplay(): void {
     this.userSortNextItems = document.querySelectorAll(".comments__sorted");
     this.userSortNextItems.innerHTML = "";
   }
 
-  sortCommentsByRelevance() {
+  sortCommentsByRelevance(): void {
     this.links[2].addEventListener("click", () => {
       alert("идет сортировка.......");
       setTimeout(() => {
@@ -172,7 +211,7 @@ class Utils {
     });
   }
 
-  sortCommentsByNumberOfResponses() {
+  sortCommentsByNumberOfResponses(): void {
     this.links[3].addEventListener("click", () => {
       alert("идет сортировка.......");
       setTimeout(() => {

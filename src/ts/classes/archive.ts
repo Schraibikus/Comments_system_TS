@@ -3,14 +3,19 @@ import { Rating } from "./rating";
 class Archive {
   main: Main;
   rating: Rating;
+
+  userComment: HTMLDivElement;
+  userNextComment!: HTMLDivElement | any;
+
   constructor({ main, rating }: { main: Main; rating: Rating }) {
     this.main = main;
     this.rating = rating;
-
-    this.userComment = document.querySelector(".comments__user");
+    this.userComment = <HTMLDivElement>(
+      document.querySelector(".comments__user")
+    );
   }
 
-  setNextUser(idx) {
+  setNextUser(idx: number): void {
     this.userNextComment = document.createElement("div");
     this.userNextComment.classList.add("comments__archive");
     this.userNextComment.setAttribute("data-index", idx);

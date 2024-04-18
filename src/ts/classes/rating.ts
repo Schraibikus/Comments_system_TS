@@ -1,14 +1,20 @@
+import { Main } from "../main";
 class Rating {
-  constructor({ main }) {
+  main: Main;
+
+  ratingBlocks!: NodeListOf<Element> | any;
+  ratingBlocksAnswer!: NodeListOf<Element> | any;
+
+  constructor({ main }: { main: Main }) {
     this.main = main;
   }
-  commentsRatingArchive() {
+  commentsRatingArchive(): void {
     this.ratingBlocks = document.querySelectorAll(".comments__rating-archive");
 
     for (let block of this.ratingBlocks) {
       block.children[0].addEventListener(
         "click",
-        (event) => {
+        (event: any) => {
           let count = 0;
           let target = event.currentTarget;
           let targetIndexArchive =
@@ -28,7 +34,7 @@ class Rating {
       );
       block.children[2].addEventListener(
         "click",
-        (event) => {
+        (event: any) => {
           let count = 0;
           let target = event.currentTarget;
           let targetIndexArchive =
@@ -49,7 +55,7 @@ class Rating {
     }
   }
 
-  commentsRatingAnswer() {
+  commentsRatingAnswer(): void {
     this.ratingBlocksAnswer = document.querySelectorAll(
       ".comments__rating-answer"
     );
@@ -57,7 +63,7 @@ class Rating {
     for (let block of this.ratingBlocksAnswer) {
       block.children[0].addEventListener(
         "click",
-        (event) => {
+        (event: any) => {
           let count = 0;
           let target = event.currentTarget;
           let targetIndexAnswer =
@@ -77,7 +83,7 @@ class Rating {
       );
       block.children[2].addEventListener(
         "click",
-        (event) => {
+        (event: any) => {
           let count = 0;
           let target = event.currentTarget;
           let targetIndexAnswer =
@@ -98,7 +104,7 @@ class Rating {
     }
   }
 
-  rememberRatingArchive(event) {
+  rememberRatingArchive(event: any): void {
     let target = event.currentTarget;
     const ratingObj = {
       value: Number(target.parentElement.parentElement.dataset.rating),
@@ -108,7 +114,7 @@ class Rating {
     localStorage.setItem("ratings", JSON.stringify(this.main.ratings));
   }
 
-  rememberRatingAnswer(event) {
+  rememberRatingAnswer(event: any): void {
     let target = event.currentTarget;
     const ratingAnswerObj = {
       value: Number(target.parentElement.parentElement.dataset.rating),
@@ -121,10 +127,10 @@ class Rating {
     );
   }
 
-  displayRatingArchive(elem) {
+  displayRatingArchive(elem: number): any {
     let arr = this.main.ratings;
-    let result = Object.fromEntries(arr.map((item) => [item.whose, 0]));
-    arr.forEach((item) => {
+    let result = Object.fromEntries(arr.map((item: any) => [item.whose, 0]));
+    arr.forEach((item: any) => {
       result[item.whose] += item.value;
     });
     if (result[elem] === undefined) {
@@ -133,10 +139,10 @@ class Rating {
       return result[elem];
     }
   }
-  displayRatingAnswer(elem) {
+  displayRatingAnswer(elem: number): any {
     let arr = this.main.answerRatings;
-    let result = Object.fromEntries(arr.map((item) => [item.whose, 0]));
-    arr.forEach((item) => {
+    let result = Object.fromEntries(arr.map((item: any) => [item.whose, 0]));
+    arr.forEach((item: any) => {
       result[item.whose] += item.value;
     });
     if (result[elem] === undefined) {
@@ -145,18 +151,18 @@ class Rating {
       return result[elem];
     }
   }
-  displayArchive(path) {
+  displayArchive(path: any): any {
     let arr = this.main.ratings;
-    let result = Object.fromEntries(arr.map((item) => [item.whose, 0]));
-    arr.forEach((item) => {
+    let result = Object.fromEntries(arr.map((item: any) => [item.whose, 0]));
+    arr.forEach((item: any) => {
       result[item.whose] += item.value;
     });
     return result[path];
   }
-  displayAnswer(path) {
+  displayAnswer(path: any): any {
     let arr = this.main.answerRatings;
-    let result = Object.fromEntries(arr.map((item) => [item.whose, 0]));
-    arr.forEach((item) => {
+    let result = Object.fromEntries(arr.map((item: any) => [item.whose, 0]));
+    arr.forEach((item: any) => {
       result[item.whose] += item.value;
     });
     return result[path];
